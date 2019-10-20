@@ -32,4 +32,5 @@ You can use Visual Studio to compile the reflective dll's from source.
 
 ## Credits
 Author: Cornelis de Plaa (@Cneelis) / Outflank
+
 Shout out to: Stan Hegt (@StanHacked) and all my other great collegues at Outflank
