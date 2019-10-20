@@ -6,7 +6,7 @@ As a proof of concept, we developed an C/C++ Active Directory reconnaissance too
 More info about the used techniques can be found on the following Blog: 
 https://outflank.nl/blog/2019/10/20/red-team-tactics-active-directory-recon-using-adsi-and-reflective-dlls/
 
-The following functionality is included in the toolkit:
+## The following functionality is included in the toolkit:
 
 ```
 Recon-AD-Domain: to enumerate Domain information (Domain name, GUID, site name, password policy, DC list e.g.).
@@ -18,7 +18,7 @@ Recon-AD-AllLocalGroups: to query a computer for all local groups and group-memb
 Recon-AD-LocalGroups: to query a computer for specific local groups and group-members (default Administrators group).
 ```
 
-Usage:
+## Usage:
 
 ```
 Download the Outflank-Recon-AD folder and load the Recon-AD.cna script within the Cobalt Strike Script Manager.
