@@ -1,7 +1,7 @@
 # Recon-AD, an AD recon tool based on ADSI and reflective DLL’s
 New monitoring and defense optics are being applied within Microsoft operating systems and security products. This should help defenders in detecting malicious behavior within their environments. While PowerShell has long been very popular for post exploitation, now it’s something attackers try to avoid. .NET is the current hype for offensive tradecraft, but Microsoft is rapidly developing new measures by adding optics to catch malicious behavior on this platform. 
 
-As a proof of concept, we developed an C/C++ Active Directory reconnaissance tool based on ADSI and reflective DLLs which can be used within Cobalt Strike. The tool is called “Recon-AD” and at this moment consist of seven Reflective DLLs and a corresponding aggressor script.
+As a proof of concept, we developed an C/C++ Active Directory reconnaissance tool based on ADSI and reflective DLLs which can be used within Cobalt Strike. The tool is called “Recon-AD” and at this moment consist of seven Reflective DLLs and a corresponding aggressor script. This tool should help you moving away from PowerShell and .NET when enumerating Active Directory and help you stay under the radar from the latest monitoring and defense technologies being applied within modern environments.
 
 More info about the used techniques can be found on the following Blog: 
 https://outflank.nl/blog/2019/10/20/red-team-tactics-active-directory-recon-using-adsi-and-reflective-dlls/
