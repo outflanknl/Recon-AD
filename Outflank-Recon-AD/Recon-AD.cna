@@ -1,0 +1,193 @@
+#Recon-AD
+#author Cornelis de Plaa
+#@outflank.nl
+
+#Using Active Directory Service Interfaces (ADSI) to query Active Directory objects and corresponding attributes.
+
+#register help
+beacon_command_register("Recon-AD-Domain", "Using Active Directory Domain Services to enumerate domain information.",
+	"Using Active Directory Domain Services to enumerate domain information.\n\n" .
+	"Synopsis: Recon-AD-Domain\n\n");
+
+beacon_command_register("Recon-AD-Users", "Use ADSI to query Active Directory user objects and attributes.",
+	"Use Active Directory Service Interfaces (ADSI) to query user objects and corresponding attributes.\n\n" .
+	"Synopsis: Recon-AD-Users [username], to query a specific user object including attributes.\n" .
+	"          Recon-AD-Users [*admin*], to query for usernames containing admin.\n" .
+	"          Recon-AD-Users All, to query all user objects including attributes.\n");
+
+beacon_command_register("Recon-AD-Computers", "Use ADSI to query Active Directory computer objects and attributes.",
+	"Use Active Directory Service Interfaces (ADSI) to query computer objects and corresponding attributes.\n\n" .
+	"Synopsis: Recon-AD-Computers [computername], to query a specific computer object including attributes.\n" .
+	"          Recon-AD-Computers [*dc*], to query for computernames containing dc.\n" .
+	"          Recon-AD-Computers All, to query all computer objects including attributes.\n");
+
+beacon_command_register("Recon-AD-Groups", "Use ADSI to query Active Directory group objects and attributes.",
+	"Use Active Directory Service Interfaces (ADSI) to query group objects and corresponding attributes.\n\n" .
+	"Synopsis: Recon-AD-Groups [groupname], to query a specific group object including attributes.\n" .
+	"          Recon-AD-Groups [*admin*], to query for groupnames containing admin.\n" .
+	"          Recon-AD-Groups All, to query all group objects including attributes.\n");
+
+beacon_command_register("Recon-AD-LocalGroups", "Use ADSI to query a computer for specific localgroups.",
+	"Use Active Directory Service Interfaces (ADSI) to query a computer for specific localgroups (default Administrators group).\n\n" .
+	"Synopsis: Recon-AD-LocalGroups [computername] [groupname], to query a specific computer and localgroup.\n");
+
+beacon_command_register("Recon-AD-AllLocalGroups", "Use ADSI to query a computer for all localgroups.",
+	"Use Active Directory Service Interfaces (ADSI) to query a computer for all localgroups.\n\n" .
+	"Synopsis: Recon-AD-AllLocalGroups [computername], to query a specific computer for all localgroups.\n");
+
+beacon_command_register("Recon-AD-SPNs", "Use ADSI to query Active Directory user objects with Service Principal Names (SPN) configured.",
+	"Use Active Directory Service Interfaces (ADSI) to query user objects with Service Principal Names (SPN) configured.\n\n" .
+	"Synopsis: Recon-AD-SPNs\n\n");
+
+
+alias Recon-AD-Domain {
+	$bid = $1;
+	blog($bid, "Let's enumerate the domain\n");
+	bdllspawn($bid, script_resource("Recon-AD-Domain.dll"), "", "Recon-AD-Domain", 5000, false);
+}
+
+alias Recon-AD-Users {
+	$bid = $1;
+
+	$input = substr($0, 15);
+	@args = split(' ', $input);
+
+	$object = @args[0];
+
+	if ($object eq "") {
+		berror($bid, "Please specify a username or all.");
+		return;
+	}
+	else if ($object eq "all") {
+		blog($bid, "Let's enumerate all users\n");
+		bdllspawn($bid, script_resource("Recon-AD-Users.dll"), "", "Recon-AD-Users", 5000, false);
+	}
+	else{
+		$param = "(sAMAccountName=" . $object . ")";
+		blog($bid, "Let's enumerate user " . $object . "\n");
+		bdllspawn($bid, script_resource("Recon-AD-Users.dll"), $param, "Recon-AD-Users", 5000, false);
+	}
+}
+
+alias Recon-AD-Computers {
+	$bid = $1;
+
+	$input = substr($0, 19);
+	@args = split(' ', $input);
+
+	$object = @args[0];
+
+	if ($object eq "") {
+		berror($bid, "Please specify a computername or all.");
+		return;
+	}
+	else if ($object eq "all") {
+		blog($bid, "Let's enumerate all computers\n");
+		bdllspawn($1, script_resource("Recon-AD-Computers.dll"), "", "Recon-AD-Computers", 5000, false);
+	}
+	else {
+		$param = "(cn=" . $object . ")";
+		blog($bid, "Let's enumerate computer " . $object . "\n");
+		bdllspawn($1, script_resource("Recon-AD-Computers.dll"), $param, "Recon-AD-Computers", 5000, false);
+	}
+}
+
+alias Recon-AD-Groups {
+	$bid = $1;
+
+	$input = substr($0, 16);
+	@args = split(' ', $input);
+
+	#For Groups with spaces in Groupname...
+	$object = @args[0];
+	$object1 = @args[1];
+	$object2 = @args[2];
+	$object3 = @args[3];
+	$object4 = @args[4];
+	$object5 = @args[5];
+
+	if ($object eq "") {
+		berror($bid, "Please specify a groupname or all.");
+		return;
+	}
+	else if ($object eq "all") {
+		blog($bid, "Let's enumerate all groups\n");
+		bdllspawn($1, script_resource("Recon-AD-Groups.dll"), "", "Recon-AD-Groups", 5000, false);
+	}
+	else if (@args[1] eq ""){
+		$param = "(sAMAccountName=" . $object . ")";
+	}
+	else if (@args[2] eq ""){
+		$param = "(sAMAccountName=" . $object . " " . $object1 . ")";
+	}
+	else if (@args[3] eq ""){
+		$param = "(sAMAccountName=" . $object . " " . $object1 . " " . $object2 . ")";
+	}
+	else if (@args[4] eq ""){
+		$param = "(sAMAccountName=" . $object . " " . $object1 . " " . $object2 . " " . $object3 . ")";
+	}
+	else if (@args[5] eq ""){
+		$param = "(sAMAccountName=" . $object . " " . $object1 . " " . $object2 . " " . $object3 . " " . $object4 . ")";
+	}
+	else {
+		$param = "(sAMAccountName=" . $object . " " . $object1 . " " . $object2 . " " . $object3 . " " . $object4 . " " . $object5 . ")";
+	}
+	blog($bid, "Let's enumerate group " . $object . " " . $object1 . " " . $object2 . " " . $object3 . " " . $object4 . " " . $object5"\n");
+	bdllspawn($1, script_resource("Recon-AD-Groups.dll"), $param, "Recon-AD-Groups", 5000, false);
+}
+
+alias Recon-AD-AllLocalGroups {
+	$bid = $1;
+
+	$input = substr($0, 24);
+	@args = split(' ', $input);
+
+	$object = @args[0];
+
+	if ($object eq "") {
+		berror($bid, "Please specify a computername.");
+		return;
+	}
+	else{
+		$param = $object;
+	}
+	blog($bid, "Let's enumerate computer " . $object . " for localgroups\n");
+	bdllspawn($bid, script_resource("Recon-AD-AllLocalGroups.dll"), $param, "Recon-AD-AllLocalGroups", 5000, false);
+}
+
+alias Recon-AD-LocalGroups {
+	$bid = $1;
+
+	$input = substr($0, 21);
+	@args = split(' ', $input);
+
+	$object = @args[0];
+	$object1 = @args[1];
+	$object2 = @args[2];
+	$object3 = @args[3];
+
+	if ($object eq "") {
+		berror($bid, "Please specify a computername and localgroup.");
+		return;
+	}
+	else if (@args[1] eq ""){
+		$param = $object;
+	}
+	else if (@args[2] eq ""){
+		$param = $object . " " . $object1;
+	}
+	else if (@args[3] eq ""){
+		$param = $object . " " . $object1 . " " . $object2;
+	}
+	else {
+		$param = $object . " " . $object1 . " " . $object2 . " " . $object3;
+	}
+	blog($bid, "Let's enumerate computer " . $object . " for localgroup " . $object1 . " " . $object2 . " " . $object3"\n");
+	bdllspawn($1, script_resource("Recon-AD-LocalGroups.dll"), $param, "Recon-AD-LocalGroups", 5000, false);
+}
+
+alias Recon-AD-SPNs {
+	$bid = $1;
+	blog($bid, "Let's enumerate all users with SPNs configured.\n");
+	bdllspawn($bid, script_resource("Recon-AD-SPNs.dll"), "servicePrincipalName=*", "Recon-AD-SPNs", 5000, false);
+}
